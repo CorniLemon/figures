@@ -1,6 +1,11 @@
 ﻿  Source.cpp
-C:\Users\Наталья\Desktop\работа\задание 2\figures\figures\Source.cpp(46,21): warning C4244: =: преобразование "double" в "int", возможна потеря данных
-C:\Users\Наталья\Desktop\работа\задание 2\figures\figures\Source.cpp(67,31): warning C4244: =: преобразование "int" в "float", возможна потеря данных
-C:\Users\Наталья\Desktop\работа\задание 2\figures\figures\Source.cpp(69,26): warning C4244: =: преобразование "float" в "int", возможна потеря данных
-C:\Users\Наталья\Desktop\работа\задание 2\figures\figures\Source.cpp(138,15): warning C4101: rgb: неиспользованная локальная переменная
-  figures.vcxproj -> C:\Users\Наталья\Desktop\работа\задание 2\figures\x64\Debug\figures.exe
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(13,32): warning C4305: инициализация: усечение из "double" в "float"
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(50,22): warning C4244: =: преобразование "float" в "int", возможна потеря данных
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(52,20): warning C4244: =: преобразование "float" в "int", возможна потеря данных
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(53,20): warning C4244: =: преобразование "float" в "int", возможна потеря данных
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(73,32): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(78,24): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(79,24): warning C4244: =: преобразование "float" в "int", возможна потеря данных
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(80,22): warning C4244: =: преобразование "float" в "int", возможна потеря данных
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(160,15): warning C4101: rgb: неиспользованная локальная переменная
+  figures.vcxproj -> C:\Users\Наталья\Desktop\работа\figures\figures\x64\Debug\figures.exe

@@ -7,7 +7,10 @@
 #include <cstdio>
 #include <Windows.h>
 #include <fstream>
+#include <math.h>
 using namespace std;
+
+const float M_PI = 3.1415926535;
 
 ifstream fin;
 
@@ -21,15 +24,15 @@ size_t count() {
         i++;
     }
     base.close();
-    delete str;
-    cout <<"в файле "<< i<<" фигур\n\n";
+    delete[] str;
+    cout << "в файле " << i << " фигур(ы)\n\n";
     return i;
 }
 
 class Figure
 {
 protected:
-    int x=0,y=0;
+    int x = 0, y = 0;
 public:
     virtual void draw(BYTE* matr) = 0;
     virtual void getxy() = 0;
@@ -39,15 +42,17 @@ class Circle : public Figure
 {
     int X0, Y0, R;
     int y1;
+    float t;
+    int L;
 public:
     virtual void draw(BYTE* matr)
     {
-        for ( x = X0 - R; x <= X0 + R; x++) {
-            y = sqrt(R * R - pow((x - X0), 2));
-            y1 = Y0 - y;
-            y += Y0;
-            matr[1000 * y + x] = 0;
-            matr[1000 * y1 + x] = 0;
+        L = 2 * M_PI * R;
+        for (t = 0; t <= 2 * M_PI; t += 2 * M_PI / L) {
+            x = X0 + R * cos(t);
+            y = Y0 + R * sin(t);
+            if ((x <= 999) || (x >= 0) || (y <= 999) || (y >= 0))
+                matr[1000 * y + x] = 0;
         }
     }
 
@@ -62,21 +67,26 @@ class Triangle : public Figure
 {
     int X[3], Y[3];
     float a;
-    void line(int g, int k, BYTE* matr) {
-        if (X[g] - X[k]) {
-            a = (Y[k] - Y[g]) / (X[k] - X[g]);
-            for (x = X[g]; x <= X[k]; x++) {
-                y = Y[g] + a * (x-X[g]);
-                matr[1000 * y + x] = 0;
-            }
+    float Hx;//шаг по x
+    float Xa, Ya;
+    void line(int now, int next, BYTE* matr) {
+        a = (Y[next] - Y[now]) / (X[next] - X[now]);
+        if (abs(a) <= 1)
+            Hx = 1;
+        else
+            Hx = 1 / abs(a);
+        for (Xa = X[now]; Xa <= X[next]; Xa += Hx) {
+            y = Y[now] + a * (Xa - X[now]);
+            x = round(Xa);
+            matr[1000 * y + x] = 0;
         }
     }
 public:
     virtual void draw(BYTE* matr)
     {
         line(0, 1, matr);
-        line(1, 2, matr);
-        line(0, 2,matr);
+        line(1, 2, matr);//не правильно считает(
+        line(0, 2, matr);
     }
 
     virtual void getxy() {
@@ -91,22 +101,34 @@ class Square : public Figure
 {
     int X0, Y0, A;
     float a;
-    int min, max;
+    int max;
 public:
     virtual void draw(BYTE* matr)
     {
-        y = Y0 + A;
-        for (x = X0; x <= X0 + A; x++) {
+        max = 999;
+
+        if (X0 + A <= 999)
+            max = X0 + A;
+        for (x = X0; x <= max; x++)
             matr[1000 * Y0 + x] = 0;
-            matr[1000 * y +x] = 0;
-        }
+
+        y = Y0 + A;
+        if (y <= 999)
+            for (x = X0; x <= max; x++)
+                matr[1000 * y + x] = 0;
+
+        if (Y0 + A <= 999)
+            max = Y0 + A;
+        else max = 999;
+        for (y = Y0; y <= max; y++)
+            matr[1000 * y + X0] = 0;
 
         x = X0 + A;
-        for (y =Y0; y <= Y0 + A; y++) {
-            matr[1000 * y + X0] = 0;
-            matr[1000 * y + x] = 0;
-        }
+        if (x <= 999)
+            for (y = Y0; y <= max; y++)
+                matr[1000 * y + x] = 0;
     }
+
     virtual void getxy() {
         fin >> X0;
         fin >> Y0;
@@ -124,7 +146,7 @@ void DrawAll(Figure** figs, size_t n, BYTE* matr)
 
 int main()
 {
-    BYTE* matr = new BYTE[1000 * 1000];//очень не очень. не красивое
+    BYTE* matr = new BYTE[1000 * 1000];//очень не очень. не красивое//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     for (int i = 0; i < 1000 * 1000; ++i) {
         matr[i] = 255;
     }
@@ -155,45 +177,49 @@ int main()
     bih.biClrUsed = 0;
     bih.biClrImportant = 0;
 
-    f = fopen("new_art.bmp", "wb");
-    fwrite(&bfh, sizeof(bfh), 1, f);
-    fwrite(&bih, sizeof(bih), 1, f);
+    try {
+        f = fopen("new_art.bmp", "wb");//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        fwrite(&bfh, sizeof(bfh), 1, f);
+        fwrite(&bih, sizeof(bih), 1, f);
 
-    size_t n = 0;
-    n = count();
+        size_t n = 0;
+        n = count();//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    //fr = fopen("fig.txt", "rb");
-    Figure** mas = new Figure * [n];
-    fin.open("fig.txt");
-    string name;
-    for (int i=0; i < n; ++i) {
-        fin >> name;
-        if (name == "TRIANGLE") {
-            mas[i] = new Triangle();
+        Figure** mas = new Figure * [n];//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        fin.open("fig.txt");
+        string name;
+        for (int i = 0; i < n; ++i) {
+            fin >> name;
+            if (name == "TRIANGLE") {
+                mas[i] = new Triangle();
+            }
+            else if (name == "CIRCLE") {
+                mas[i] = new Circle();
+            }
+            else if (name == "SQUARE") {
+                mas[i] = new Square();
+            }
+            else {
+                cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nв исходном файле не верно задано имя фигуры";
+                return 0;
+            }
+            cout << name << endl;
+            mas[i]->getxy();
         }
-        else if (name == "CIRCLE") {
-            mas[i] = new Circle();
+
+        DrawAll(mas, n, matr);
+
+        for (int i = 0; i < 1000 * 1000; ++i) {
+            fwrite(&matr[i], 1, 1, f);
+            fwrite(&matr[i], 1, 1, f);
+            fwrite(&matr[i], 1, 1, f);
+
         }
-        else if (name == "SQUARE") {
-            mas[i] = new Square();
-        }
-        else {
-            cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nв исходном файле не верно задано имя фигуры";
-            return 0;
-        }
-        cout << name<<endl;
-        mas[i]->getxy();
+        fclose(f);
+    }
+    catch (...) {
+
     }
 
-    DrawAll(mas, n, matr);
-
-    for (int i = 0; i < 1000 * 1000; ++i) {
-        fwrite(&matr[i], 1, 1, f);
-        fwrite(&matr[i], 1, 1, f);
-        fwrite(&matr[i], 1, 1, f);
-
-    }
-    fclose(f);
-    
-	return 0;
+    return 0;
 }
