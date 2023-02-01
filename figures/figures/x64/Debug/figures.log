@@ -1,0 +1,6 @@
+﻿  Source.cpp
+C:\Users\Наталья\Desktop\работа\задание 2\figures\figures\Source.cpp(46,21): warning C4244: =: преобразование "double" в "int", возможна потеря данных
+C:\Users\Наталья\Desktop\работа\задание 2\figures\figures\Source.cpp(67,31): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\Наталья\Desktop\работа\задание 2\figures\figures\Source.cpp(69,26): warning C4244: =: преобразование "float" в "int", возможна потеря данных
+C:\Users\Наталья\Desktop\работа\задание 2\figures\figures\Source.cpp(138,15): warning C4101: rgb: неиспользованная локальная переменная
+  figures.vcxproj -> C:\Users\Наталья\Desktop\работа\задание 2\figures\x64\Debug\figures.exe
