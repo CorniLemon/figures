@@ -13,11 +13,15 @@ using namespace std;
 const float M_PI = 3.1415926535;
 
 ifstream fin;
+ifstream base;
 
 size_t count() {
     char* str = new char[1024];
     size_t i = 0;
-    ifstream base("fig.txt");
+    base.open("fig.txt");
+    if (!base) {
+        throw 1;
+    }
     while (!base.eof())
     {
         base.getline(str, 1024, '\n');
@@ -51,7 +55,7 @@ public:
         for (t = 0; t <= 2 * M_PI; t += 2 * M_PI / L) {
             x = X0 + R * cos(t);
             y = Y0 + R * sin(t);
-            if ((x <= 999) || (x >= 0) || (y <= 999) || (y >= 0))
+            if ((x <= 999) && (x >= 0) && (y <= 999) && (y >= 0))
                 matr[1000 * y + x] = 0;
         }
     }
@@ -59,7 +63,7 @@ public:
     virtual void getxy() {
         fin >> X0;
         fin >> Y0;
-        fin >> R;
+        fin >> R;//если даже не один пиксель круга не попадёт на изображение ничего не сломается
     }
 };
 
@@ -96,6 +100,8 @@ public:
         for (int i = 0; i < 3; i++) {
             fin >> X[i];
             fin >> Y[i];
+            if ((X[i] > 999) || (X[i] < 0) || (Y[i] > 999) || (Y[i] < 0))
+                throw 2;
         }
     }
 };
@@ -136,6 +142,8 @@ public:
         fin >> X0;
         fin >> Y0;
         fin >> A;
+        if ((X0 > 999) || (X0 < 0) || (Y0 > 999) || (Y0 < 0))
+            throw 3;
     }
 };
 
@@ -147,17 +155,14 @@ void DrawAll(Figure** figs, size_t n, BYTE* matr)
     }
 }
 
+Figure** mas = NULL;
+
 int main()
 {
-    BYTE* matr = new BYTE[1000 * 1000];//очень не очень. не красивое//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    for (int i = 0; i < 1000 * 1000; ++i) {
-        matr[i] = 255;
-    }
-
+    setlocale(LC_ALL, "Russian");
     FILE* f = NULL;
     FILE* fr = NULL;
-    setlocale(LC_ALL, "Russian");
-
+    BYTE* matr = NULL;
     BITMAPFILEHEADER bfh;
     BITMAPINFOHEADER bih;
     RGBTRIPLE rgb;
@@ -181,20 +186,27 @@ int main()
     bih.biClrImportant = 0;
 
     try {
-        f = fopen("new_art.bmp", "wb");//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        matr = new BYTE[1000 * 1000];//очень не очень. не красивое
+        for (int i = 0; i < 1000 * 1000; ++i) {//инициализация белым цветом
+            matr[i] = 255;
+        }
+        f = fopen("new_art.bmp", "wb");
+        if (!f) {
+            cout << "не удалось создать .bmp файл\n";
+            return 0;
+        }
         fwrite(&bfh, sizeof(bfh), 1, f);
         fwrite(&bih, sizeof(bih), 1, f);
 
         size_t n = 0;
-        n = count();//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-        Figure** mas = new Figure * [n];//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        n = count();
+        mas = new Figure * [n];
         fin.open("fig.txt");
         string name;
         for (int i = 0; i < n; ++i) {
             fin >> name;
             if (name == "TRIANGLE") {
-                mas[i] = new Triangle();
+                mas[i] = new Triangle();//надо ли закрывать все i элементов?
             }
             else if (name == "CIRCLE") {
                 mas[i] = new Circle();
@@ -207,8 +219,9 @@ int main()
                 return 0;
             }
             cout << name << endl;
-            mas[i]->getxy();
+            mas[i]->getxy();//что может сломаться здесь?
         }
+        fin.close();
 
         DrawAll(mas, n, matr);
 
@@ -219,10 +232,63 @@ int main()
 
         }
         fclose(f);
+        delete[] mas;
+        delete[] matr;
+        matr = NULL;
+        mas = NULL;
+        return 0;
+    }
+    catch (int ex) {
+        switch (ex) {
+        case 1:
+            cout << "\nошибка count. Не удалось открыть файл для чтения количества строк!\n";
+            break;
+        case 2:
+            cout << "\nошибка Triangle.getxy. координаты одной из точек лежат за границей изображения!\n";
+            break;
+        case 3:
+            cout << "\nошибка Square.getxy. координаты левого нижнего угла лежат за границей изображения!\n";
+            break;
+        }
+        if (mas)
+        {
+            delete[] mas;
+            mas = NULL;
+        }
+        if (f)
+        {
+            fclose(f);
+            f = NULL;
+        }
+        if (matr)
+        {
+            delete[] matr;
+            matr = NULL;
+        }
+        if (fin) {
+            fin.close();
+        }
+        return 0;
     }
     catch (...) {
-
+        if (mas)
+        {
+            delete[] mas;
+            mas = NULL;
+        }
+        if (f)
+        {
+            fclose(f);
+            f = NULL;
+        }
+        if (matr)
+        {
+            delete[] matr;
+            matr = NULL;
+        }
+        if (fin) {
+            fin.close();
+        }
+        return 0;
     }
-
-    return 0;
 }
