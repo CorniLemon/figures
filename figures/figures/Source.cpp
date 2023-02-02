@@ -67,10 +67,13 @@ class Triangle : public Figure
 {
     int X[3], Y[3];
     float a;
+    float HIa, ZNa;
     float Hx;//шаг по x
     float Xa, Ya;
     void line(int now, int next, BYTE* matr) {
-        a = (Y[next] - Y[now]) / (X[next] - X[now]);
+        HIa = Y[next] - Y[now];
+        ZNa = X[next] - X[now];
+        a = HIa / ZNa;
         if (abs(a) <= 1)
             Hx = 1;
         else
