@@ -36,7 +36,6 @@ protected:
 
 public:
     virtual void draw(BYTE* matr) = 0;
-    virtual void getxy() = 0;
 };
 
 class Circle : public Figure
@@ -46,6 +45,12 @@ class Circle : public Figure
     float t;
     int L;
 public:
+    Circle() {
+        fin >> X0;
+        fin >> Y0;
+        fin >> R;//если даже не один пиксель круга не попадёт на изображение ничего не сломается
+    }
+
     virtual void draw(BYTE* matr)
     {
         int x = 0, y = 0;
@@ -56,12 +61,6 @@ public:
             if ((x <= 999) && (x >= 0) && (y <= 999) && (y >= 0))
                 matr[1000 * y + x] = 0;
         }
-    }
-
-    virtual void getxy() {
-        fin >> X0;
-        fin >> Y0;
-        fin >> R;//если даже не один пиксель круга не попадёт на изображение ничего не сломается
     }
 };
 
@@ -88,20 +87,20 @@ class Triangle : public Figure
         }
     }
 public:
-    virtual void draw(BYTE* matr)
-    {
-        line(0, 1, matr);
-        line(1, 2, matr);//не правильно считает(
-        line(0, 2, matr);
-    }
-
-    virtual void getxy() {
+    Triangle() {
         for (int i = 0; i < 3; i++) {
             fin >> X[i];
             fin >> Y[i];
             if ((X[i] > 999) || (X[i] < 0) || (Y[i] > 999) || (Y[i] < 0))
                 throw 2;
         }
+    }
+
+    virtual void draw(BYTE* matr)
+    {
+        line(0, 1, matr);
+        line(1, 2, matr);//не правильно считает(
+        line(0, 2, matr);
     }
 };
 
@@ -111,6 +110,14 @@ class Square : public Figure
     float a;
     int max;
 public:
+    Square() {
+        fin >> X0;
+        fin >> Y0;
+        fin >> A;
+        if ((X0 > 999) || (X0 < 0) || (Y0 > 999) || (Y0 < 0))
+            throw 3;
+    }
+
     virtual void draw(BYTE* matr)
     {
         int x = 0, y = 0;
@@ -136,14 +143,6 @@ public:
         if (x <= 999)
             for (y = Y0; y <= max; y++)
                 matr[1000 * y + x] = 0;
-    }
-
-    virtual void getxy() {
-        fin >> X0;
-        fin >> Y0;
-        fin >> A;
-        if ((X0 > 999) || (X0 < 0) || (Y0 > 999) || (Y0 < 0))
-            throw 3;
     }
 };
 
@@ -221,7 +220,6 @@ int main()
                 throw 4;
             }
             cout << name << endl;
-            mas[i]->getxy();//что может сломаться здесь?
             ++num;
         }
         fin.close();
