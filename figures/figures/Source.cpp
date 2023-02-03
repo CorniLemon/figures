@@ -33,7 +33,7 @@ size_t count(ifstream& base) {
 class Figure
 {
 protected:
-    int x = 0, y = 0;
+
 public:
     virtual void draw(BYTE* matr) = 0;
     virtual void getxy() = 0;
@@ -48,6 +48,7 @@ class Circle : public Figure
 public:
     virtual void draw(BYTE* matr)
     {
+        int x = 0, y = 0;
         L = 2 * M_PI * R;
         for (t = 0; t <= 2 * M_PI; t += 2 * M_PI / L) {
             x = X0 + R * cos(t);
@@ -72,6 +73,7 @@ class Triangle : public Figure
     float Hx;//шаг по x
     float Xa, Ya;
     void line(int now, int next, BYTE* matr) {
+        int x = 0, y = 0;
         HIa = Y[next] - Y[now];
         ZNa = X[next] - X[now];
         a = HIa / ZNa;
@@ -111,6 +113,7 @@ class Square : public Figure
 public:
     virtual void draw(BYTE* matr)
     {
+        int x = 0, y = 0;
         max = 999;
 
         if (X0 + A <= 999)
