@@ -1,6 +1,6 @@
 ﻿  Source.cpp
 C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(13,32): warning C4305: инициализация: усечение из "double" в "float"
-C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(57,22): warning C4244: =: преобразование "float" в "int", возможна потеря данных
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(51,17): warning C4244: =: преобразование "double" в "float", возможна потеря данных
 C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(59,20): warning C4244: =: преобразование "float" в "int", возможна потеря данных
 C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(60,20): warning C4244: =: преобразование "float" в "int", возможна потеря данных
 C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(76,23): warning C4244: =: преобразование "int" в "float", возможна потеря данных

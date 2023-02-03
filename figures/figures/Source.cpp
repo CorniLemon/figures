@@ -42,20 +42,20 @@ class Circle : public Figure
 {
     int X0, Y0, R;
     int y1;
-    float t;
-    int L;
+    float Ht;
 public:
     Circle() {
         fin >> X0;
         fin >> Y0;
         fin >> R;//если даже не один пиксель круга не попадёт на изображение ничего не сломается
+        Ht = 1. / R;
     }
 
     virtual void draw(BYTE* matr)
     {
+        float t;
         int x = 0, y = 0;
-        L = 2 * M_PI * R;
-        for (t = 0; t <= 2 * M_PI; t += 2 * M_PI / L) {
+        for (t = 0; t <= 2 * M_PI; t += Ht) {
             x = X0 + R * cos(t);
             y = Y0 + R * sin(t);
             if ((x <= 999) && (x >= 0) && (y <= 999) && (y >= 0))
