@@ -7,12 +7,10 @@
 #include <cstdio>
 #include <Windows.h>
 #include <fstream>
+#define _USE_MATH_DEFINES
 #include <math.h>
 using namespace std;
 
-const float M_PI = 3.1415926535;
-
-ifstream fin;
 BYTE matr[1000 * 1000*3];
 
 size_t count(ifstream& base) {
@@ -45,7 +43,7 @@ class Circle : public Figure
     int y1;
     float Ht;
 public:
-    Circle() {
+    Circle(ifstream& fin) {
         fin >> X0;
         fin >> Y0;
         fin >> R;
@@ -109,7 +107,7 @@ class Triangle : public Figure
         
     }
 public:
-    Triangle() {
+    Triangle(ifstream& fin) {
         for (int i = 0; i < 3; i++) {
             fin >> X[i];
             fin >> Y[i];
@@ -128,7 +126,7 @@ class Square : public Figure
 {
     int X0, Y0, A;
 public:
-    Square() {
+    Square(ifstream& fin) {
         fin >> X0;
         fin >> Y0;
         fin >> A;
@@ -185,6 +183,7 @@ int main()
     BITMAPFILEHEADER bfh;
     BITMAPINFOHEADER bih;
     RGBTRIPLE rgb;
+    ifstream fin;
 
     size_t n = 0;
     size_t num = 0;
@@ -226,13 +225,13 @@ int main()
         for (int i = 0; i < n; ++i) {
             fin >> name;
             if (name == "TRIANGLE") {
-                mas[i] = new Triangle();//надо ли закрывать все i элементов?
+                mas[i] = new Triangle(fin);//надо ли закрывать все i элементов?
             }
             else if (name == "CIRCLE") {
-                mas[i] = new Circle();
+                mas[i] = new Circle(fin);
             }
             else if (name == "SQUARE") {
-                mas[i] = new Square();
+                mas[i] = new Square(fin);
             }
             else {
                 throw 4;
