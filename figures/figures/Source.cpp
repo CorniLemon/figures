@@ -16,7 +16,7 @@ ifstream fin;
 ifstream base;
 
 size_t count() {
-    char* str = new char[1024];
+    char str[1024];
     size_t i = 0;
     base.open("fig.txt");
     if (!base) {
@@ -28,7 +28,6 @@ size_t count() {
         i++;
     }
     base.close();
-    delete[] str;
     cout << "в файле " << i << " фигур(ы)\n\n";
     return i;
 }
