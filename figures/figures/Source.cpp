@@ -155,7 +155,7 @@ void DrawAll(Figure** figs, size_t n, BYTE* matr)
     }
 }
 
-Figure** mas = NULL;
+Figure** mas = NULL;//почему если её переставить в начало, то вылазит ошибка "нужна ; перед *"?
 
 int main()
 {
@@ -166,6 +166,9 @@ int main()
     BITMAPFILEHEADER bfh;
     BITMAPINFOHEADER bih;
     RGBTRIPLE rgb;
+
+    size_t n = 0;
+    size_t num = 0;
 
     bfh.bfType = 19778;
     bfh.bfSize = sizeof(bfh) + sizeof(bih) + 3 * 1000 * 1000;
@@ -198,7 +201,6 @@ int main()
         fwrite(&bfh, sizeof(bfh), 1, f);
         fwrite(&bih, sizeof(bih), 1, f);
 
-        size_t n = 0;
         n = count();
         mas = new Figure * [n];
         fin.open("fig.txt");
@@ -215,11 +217,11 @@ int main()
                 mas[i] = new Square();
             }
             else {
-                cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nв исходном файле не верно задано имя фигуры";
-                return 0;
+                throw 4;
             }
             cout << name << endl;
             mas[i]->getxy();//что может сломаться здесь?
+            ++num;
         }
         fin.close();
 
@@ -232,6 +234,10 @@ int main()
 
         }
         fclose(f);
+        for (int i = 0; i < n; ++i) {
+            delete mas[i];
+            mas[i] = NULL;
+        }
         delete[] mas;
         delete[] matr;
         matr = NULL;
@@ -249,9 +255,16 @@ int main()
         case 3:
             cout << "\nошибка Square.getxy. координаты левого нижнего угла лежат за границей изображения!\n";
             break;
+        case 4:
+            cout << "\nошибка при чтении. в исходном файле не верно задано имя фигуры\n";
+            break;
         }
         if (mas)
         {
+            for (int i = 0; i < num; ++i) {
+                delete mas[i];
+                mas[i] = NULL;
+            }
             delete[] mas;
             mas = NULL;
         }
@@ -273,6 +286,10 @@ int main()
     catch (...) {
         if (mas)
         {
+            for (int i = 0; i < num; ++i) {
+                delete mas[i];
+                mas[i] = NULL;
+            }
             delete[] mas;
             mas = NULL;
         }
