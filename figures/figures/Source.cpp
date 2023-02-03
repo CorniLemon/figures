@@ -60,7 +60,7 @@ public:
             x = X0 + R * cos(t);
             y = Y0 + R * sin(t);
             if ((x <= 999) && (x >= 0) && (y <= 999) && (y >= 0))
-                matr[1000 * y + x] = 0;
+                memset(matr + 3 * (1000 * y + x), 0, 3);
         }
     }
 };
@@ -88,7 +88,7 @@ class Triangle : public Figure
                     y = Y[now] + a * (Xa - X[now]);
                     x = round(Xa);
                     if ((x <= 999) && (x >= 0) && (y <= 999) && (y >= 0))
-                        matr[1000 * y + x] = 0;
+                        memset(matr + 3 * (1000 * y + x), 0, 3);
                 }
             }
             else {
@@ -96,7 +96,7 @@ class Triangle : public Figure
                     y = Y[next] + a * (Xa - X[next]);
                     x = round(Xa);
                     if ((x <= 999) && (x >= 0) && (y <= 999) && (y >= 0))
-                        matr[1000 * y + x] = 0;
+                        memset(matr + 3 * (1000 * y + x), 0, 3);
                 }
             }
         }
@@ -104,7 +104,7 @@ class Triangle : public Figure
             if((X[now] <= 999) && (X[now] >= 0))
                 for (y = Y[now]; y <= Y[next]; y++)
                     if ((y <= 999) && (y >= 0))
-                        matr[1000 * y + X[now]] = 0;
+                        memset(matr + 3 * (1000 * y + X[now]), 0, 3);
         }
         
     }
@@ -150,21 +150,21 @@ public:
 
         if ((Y0 >= 0) && (Y0 <= 999))
             for (x = Xmin; x <= Xmax; x++)
-                matr[1000 * Y0 + x] = 0;
+                memset(matr + 3 * (1000 * Y0 + x), 0, 3);
 
         y = Y0 + A;
         if ((y >= 0) && (y <= 999))
             for (x = Xmin; x <= Xmax; x++)
-                matr[1000 * y + x] = 0;
+                memset(matr + 3 * (1000 * y + x), 0, 3);
 
         if ((X0 >= 0) && (X0 <= 999))
             for (y = Ymin; y <= Ymax; y++)
-                matr[1000 * y + X0] = 0;
+                memset(matr + 3 * (1000 * y + X0), 0, 3);
 
         x = X0 + A;
         if ((x >= 0) && (x <= 999))
             for (y = Ymin; y <= Ymax; y++)
-                matr[1000 * y + x] = 0;
+                memset(matr + 3 * (1000 * y + x), 0, 3);
     }
 };
 
@@ -244,11 +244,8 @@ int main()
 
         DrawAll(mas, n, matr);
 
-        for (int i = 0; i < 1000 * 1000; ++i) {
-            fwrite(&matr[i], 1, 1, f);
-            fwrite(&matr[i], 1, 1, f);
-            fwrite(&matr[i], 1, 1, f);
-        }
+        fwrite(&matr, 1, 1000*1000*3, f);
+
         fclose(f);
         for (int i = 0; i < n; ++i) {
             delete mas[i];
