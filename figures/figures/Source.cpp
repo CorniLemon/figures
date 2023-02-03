@@ -13,6 +13,7 @@ using namespace std;
 const float M_PI = 3.1415926535;
 
 ifstream fin;
+BYTE matr[1000 * 1000*3];
 
 size_t count(ifstream& base) {
     char str[1024];
@@ -47,7 +48,7 @@ public:
     Circle() {
         fin >> X0;
         fin >> Y0;
-        fin >> R;//если даже не один пиксель круга не попадёт на изображение ничего не сломается
+        fin >> R;
         Ht = 1. / R;
     }
 
@@ -67,40 +68,58 @@ public:
 class Triangle : public Figure
 {
     int X[3], Y[3];
-    float a;
-    float HIa, ZNa;
-    float Hx;//шаг по x
-    float Xa, Ya;
+
     void line(int now, int next, BYTE* matr) {
+        float a;
+        float HIa, ZNa;
+        float Hx;//шаг по x
+        float Xa, Ya;
         int x = 0, y = 0;
         HIa = Y[next] - Y[now];
         ZNa = X[next] - X[now];
-        a = HIa / ZNa;
-        if (abs(a) <= 1)
-            Hx = 1;
-        else
-            Hx = 1 / abs(a);
-        for (Xa = X[now]; Xa <= X[next]; Xa += Hx) {
-            y = Y[now] + a * (Xa - X[now]);
-            x = round(Xa);
-            if ((x <= 999) && (x >= 0) && (y <= 999) && (y >= 0))
-                matr[1000 * y + x] = 0;
+        if (ZNa) {
+            a = HIa / ZNa;
+            if (abs(a) <= 1)
+                Hx = 1;
+            else
+                Hx = 1 / abs(a);
+            if (ZNa > 0){
+                for (Xa = X[now]; Xa <= X[next]; Xa += Hx) {
+                    y = Y[now] + a * (Xa - X[now]);
+                    x = round(Xa);
+                    if ((x <= 999) && (x >= 0) && (y <= 999) && (y >= 0))
+                        matr[1000 * y + x] = 0;
+                }
+            }
+            else {
+                for (Xa = X[next]; Xa <= X[now]; Xa += Hx) {
+                    y = Y[next] + a * (Xa - X[next]);
+                    x = round(Xa);
+                    if ((x <= 999) && (x >= 0) && (y <= 999) && (y >= 0))
+                        matr[1000 * y + x] = 0;
+                }
+            }
         }
+        else {
+            if((X[now] <= 999) && (X[now] >= 0))
+                for (y = Y[now]; y <= Y[next]; y++)
+                    if ((y <= 999) && (y >= 0))
+                        matr[1000 * y + X[now]] = 0;
+        }
+        
     }
 public:
     Triangle() {
         for (int i = 0; i < 3; i++) {
             fin >> X[i];
             fin >> Y[i];
-            /*if ((X[i] > 999) || (X[i] < 0) || (Y[i] > 999) || (Y[i] < 0))
-                throw 2;*/
         }
     }
 
     virtual void draw(BYTE* matr)
     {
         line(0, 1, matr);
-        line(1, 2, matr);//не правильно считает(
+        line(1, 2, matr);
         line(0, 2, matr);
     }
 };
@@ -113,8 +132,6 @@ public:
         fin >> X0;
         fin >> Y0;
         fin >> A;
-        /*if ((X0 > 999) || (X0 < 0) || (Y0 > 999) || (Y0 < 0))
-            throw 3;*/
     }
 
     virtual void draw(BYTE* matr)
@@ -159,14 +176,12 @@ void DrawAll(Figure** figs, size_t n, BYTE* matr)
     }
 }
 
-Figure** mas = NULL;//почему если её переставить в начало, то вылазит ошибка "нужна ; перед *"?
-
 int main()
 {
     setlocale(LC_ALL, "Russian");
+    Figure** mas = NULL;
     FILE* f = NULL;
     FILE* fr = NULL;
-    BYTE* matr = NULL;
     BITMAPFILEHEADER bfh;
     BITMAPINFOHEADER bih;
     RGBTRIPLE rgb;
@@ -193,10 +208,8 @@ int main()
     bih.biClrImportant = 0;
 
     try {
-        matr = new BYTE[1000 * 1000];//очень не очень. не красивое
-        for (int i = 0; i < 1000 * 1000; ++i) {//инициализация белым цветом
-            matr[i] = 255;
-        }
+        memset(matr, 255, 1000 * 1000 * 3);
+
         f = fopen("new_art.bmp", "wb");
         if (!f) {
             cout << "не удалось создать .bmp файл\n";
@@ -235,7 +248,6 @@ int main()
             fwrite(&matr[i], 1, 1, f);
             fwrite(&matr[i], 1, 1, f);
             fwrite(&matr[i], 1, 1, f);
-
         }
         fclose(f);
         for (int i = 0; i < n; ++i) {
@@ -243,8 +255,6 @@ int main()
             mas[i] = NULL;
         }
         delete[] mas;
-        delete[] matr;
-        matr = NULL;
         mas = NULL;
         return 0;
     }
@@ -277,11 +287,6 @@ int main()
             fclose(f);
             f = NULL;
         }
-        if (matr)
-        {
-            delete[] matr;
-            matr = NULL;
-        }
         if (fin) {
             fin.close();
         }
@@ -301,11 +306,6 @@ int main()
         {
             fclose(f);
             f = NULL;
-        }
-        if (matr)
-        {
-            delete[] matr;
-            matr = NULL;
         }
         if (fin) {
             fin.close();
