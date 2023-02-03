@@ -13,12 +13,10 @@ using namespace std;
 const float M_PI = 3.1415926535;
 
 ifstream fin;
-ifstream base;
 
-size_t count() {
+size_t count(ifstream& base) {
     char str[1024];
     size_t i = 0;
-    base.open("fig.txt");
     if (!base) {
         throw 1;
     }
@@ -27,7 +25,7 @@ size_t count() {
         base.getline(str, 1024, '\n');
         i++;
     }
-    base.close();
+    base.seekg(0);
     cout << "в файле " << i << " фигур(ы)\n\n";
     return i;
 }
@@ -200,9 +198,10 @@ int main()
         fwrite(&bfh, sizeof(bfh), 1, f);
         fwrite(&bih, sizeof(bih), 1, f);
 
-        n = count();
-        mas = new Figure * [n];
         fin.open("fig.txt");
+        n = count(fin);
+        mas = new Figure * [n];
+        
         string name;
         for (int i = 0; i < n; ++i) {
             fin >> name;
