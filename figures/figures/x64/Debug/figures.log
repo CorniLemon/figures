@@ -8,5 +8,5 @@ C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(
 C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(83,24): warning C4244: =: преобразование "int" в "float", возможна потеря данных
 C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(84,24): warning C4244: =: преобразование "float" в "int", возможна потеря данных
 C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(85,22): warning C4244: =: преобразование "float" в "int", возможна потеря данных
-C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(167,15): warning C4101: rgb: неиспользованная локальная переменная
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(172,15): warning C4101: rgb: неиспользованная локальная переменная
   figures.vcxproj -> C:\Users\Наталья\Desktop\работа\figures\figures\x64\Debug\figures.exe

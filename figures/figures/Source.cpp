@@ -83,7 +83,8 @@ class Triangle : public Figure
         for (Xa = X[now]; Xa <= X[next]; Xa += Hx) {
             y = Y[now] + a * (Xa - X[now]);
             x = round(Xa);
-            matr[1000 * y + x] = 0;
+            if ((x <= 999) && (x >= 0) && (y <= 999) && (y >= 0))
+                matr[1000 * y + x] = 0;
         }
     }
 public:
@@ -91,8 +92,8 @@ public:
         for (int i = 0; i < 3; i++) {
             fin >> X[i];
             fin >> Y[i];
-            if ((X[i] > 999) || (X[i] < 0) || (Y[i] > 999) || (Y[i] < 0))
-                throw 2;
+            /*if ((X[i] > 999) || (X[i] < 0) || (Y[i] > 999) || (Y[i] < 0))
+                throw 2;*/
         }
     }
 
@@ -107,41 +108,45 @@ public:
 class Square : public Figure
 {
     int X0, Y0, A;
-    float a;
-    int max;
 public:
     Square() {
         fin >> X0;
         fin >> Y0;
         fin >> A;
-        if ((X0 > 999) || (X0 < 0) || (Y0 > 999) || (Y0 < 0))
-            throw 3;
+        /*if ((X0 > 999) || (X0 < 0) || (Y0 > 999) || (Y0 < 0))
+            throw 3;*/
     }
 
     virtual void draw(BYTE* matr)
     {
         int x = 0, y = 0;
-        max = 999;
+        int Xmin=0, Xmax=999, Ymin=0, Ymax=999;
 
-        if (X0 + A <= 999)
-            max = X0 + A;
-        for (x = X0; x <= max; x++)
-            matr[1000 * Y0 + x] = 0;
+        if (X0 > 0)
+            Xmin = X0;
+        if (X0 + A < 999)
+            Xmax = X0 + A;
+        if (Y0 > 0)
+            Ymin = Y0;
+        if (Y0 + A < 999)
+            Ymax = Y0 + A;
+
+        if ((Y0 >= 0) && (Y0 <= 999))
+            for (x = Xmin; x <= Xmax; x++)
+                matr[1000 * Y0 + x] = 0;
 
         y = Y0 + A;
-        if (y <= 999)
-            for (x = X0; x <= max; x++)
+        if ((y >= 0) && (y <= 999))
+            for (x = Xmin; x <= Xmax; x++)
                 matr[1000 * y + x] = 0;
 
-        if (Y0 + A <= 999)
-            max = Y0 + A;
-        else max = 999;
-        for (y = Y0; y <= max; y++)
-            matr[1000 * y + X0] = 0;
+        if ((X0 >= 0) && (X0 <= 999))
+            for (y = Ymin; y <= Ymax; y++)
+                matr[1000 * y + X0] = 0;
 
         x = X0 + A;
-        if (x <= 999)
-            for (y = Y0; y <= max; y++)
+        if ((x >= 0) && (x <= 999))
+            for (y = Ymin; y <= Ymax; y++)
                 matr[1000 * y + x] = 0;
     }
 };
