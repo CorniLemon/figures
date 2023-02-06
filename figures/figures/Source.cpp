@@ -10,15 +10,100 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 using namespace std;
+#include "MyClass.h"
+
+struct Point
+{
+private:
+    double X, Y;
+public:
+    Point()
+        : X(0), Y(0)
+    {}
+
+    Point(double X, double Y)
+        : X(X), Y(Y)
+    {}
+
+    Point(const Point & p)
+        : X(p.X), Y(p.Y)
+    {}
+
+    Point operator+(const Point& p)
+    {
+        return Point(X + p.X, Y + p.Y);
+    }
+
+    friend Point operator-(const Point& p1, const Point& p2);
+    friend Point operator-(double x, const Point& p);
+
+    Point & operator+=(const Point& p)
+    {
+        X += p.X;
+        Y += p.Y;
+        return *this;
+    }
+
+    Point operator*(const Point& p);
+};
+
+Point Point::operator*(const Point& p)
+{
+    return Point(X * p.X, Y * p.Y);
+}
+
+Point operator-(const Point& p1, const Point& p2)
+{
+    return Point(p1.X - p2.X, p1.Y - p2.Y);
+}
+
+Point operator-(double x, const Point& p)
+{
+    return Point(x - p.X, -p.Y);
+}
+
+void f()
+{
+    Point p1, p2(0, 5);
+    Point p3 = p1 + p2;
+    Point p4 = p1.operator+(p2);
+}
+
+class Array
+{
+private:
+    int* p;
+    int n;
+
+    Array()
+        : p(NULL), n(0)
+    {}
+
+    Array(int n)
+        : p(new int[n])
+    {}
+
+    Array(const Array& a)
+    {
+        if (a.p)
+        {
+            p = new int[a.n];
+            n = a.n;
+            memcpy(p, a.p, n * sizeof(int));
+        }
+        else
+        {
+            p = NULL;
+            n = 0;
+        }
+    }
+};
 
 BYTE matr[1000 * 1000*3];
 
 size_t count(ifstream& base) {
     char str[1024];
     size_t i = 0;
-    if (!base) {
-        throw 1;
-    }
     while (!base.eof())
     {
         base.getline(str, 1024, '\n');
@@ -32,22 +117,26 @@ size_t count(ifstream& base) {
 class Figure
 {
 protected:
-
+    int X0, Y0;
 public:
     virtual void draw(BYTE* matr) = 0;
+
+    virtual void init(ifstream& fin)
+    {
+        fin >> X0;
+        fin >> Y0;
+    }
 };
 
 class Circle : public Figure
 {
-    int X0, Y0, R;
+    int R;
     int y1;
     float Ht;
 public:
-    Circle(ifstream& fin) {
-        fin >> X0;
-        fin >> Y0;
-        fin >> R;
-        Ht = 1. / R;
+    Circle(ifstream& fin)
+    {
+        init(fin);
     }
 
     virtual void draw(BYTE* matr)
@@ -61,20 +150,27 @@ public:
                 memset(matr + 3 * (1000 * y + x), 0, 3);
         }
     }
+
+    virtual void init(ifstream& fin)
+    {
+        Figure::init(fin);
+        fin >> R;
+        Ht = 1. / R;
+    }
 };
 
 class Triangle : public Figure
 {
-    int X[3], Y[3];
+    int X1, X2, Y1, Y2;
 
-    void line(int now, int next, BYTE* matr) {
+    void line(int xnow, int ynow, int xnext, int ynext, BYTE* matr) {
         float a;
         float HIa, ZNa;
         float Hx;//шаг по x
-        float Xa, Ya;
+        float Xa;
         int x = 0, y = 0;
-        HIa = Y[next] - Y[now];
-        ZNa = X[next] - X[now];
+        HIa = ynext - ynow;
+        ZNa = xnext - xnow;
         if (ZNa) {
             a = HIa / ZNa;
             if (abs(a) <= 1)
@@ -82,16 +178,16 @@ class Triangle : public Figure
             else
                 Hx = 1 / abs(a);
             if (ZNa > 0){
-                for (Xa = X[now]; Xa <= X[next]; Xa += Hx) {
-                    y = Y[now] + a * (Xa - X[now]);
+                for (Xa = xnow; Xa <= xnext; Xa += Hx) {
+                    y = ynow + a * (Xa - xnow);
                     x = round(Xa);
                     if ((x <= 999) && (x >= 0) && (y <= 999) && (y >= 0))
                         memset(matr + 3 * (1000 * y + x), 0, 3);
                 }
             }
             else {
-                for (Xa = X[next]; Xa <= X[now]; Xa += Hx) {
-                    y = Y[next] + a * (Xa - X[next]);
+                for (Xa = xnext; Xa <= xnow; Xa += Hx) {
+                    y = ynext + a * (Xa - xnext);
                     x = round(Xa);
                     if ((x <= 999) && (x >= 0) && (y <= 999) && (y >= 0))
                         memset(matr + 3 * (1000 * y + x), 0, 3);
@@ -99,26 +195,35 @@ class Triangle : public Figure
             }
         }
         else {
-            if((X[now] <= 999) && (X[now] >= 0))
-                for (y = Y[now]; y <= Y[next]; y++)
+            int Y1 = min(ynow, ynext);
+            int Y2 = max(ynow, ynext);
+            if ((xnow <= 999) && (xnow >= 0))
+                for (y = Y1; y <= Y2; y++)
                     if ((y <= 999) && (y >= 0))
-                        memset(matr + 3 * (1000 * y + X[now]), 0, 3);
+                        memset(matr + 3 * (1000 * y + xnow), 0, 3);
         }
         
     }
 public:
-    Triangle(ifstream& fin) {
-        for (int i = 0; i < 3; i++) {
-            fin >> X[i];
-            fin >> Y[i];
-        }
+    Triangle(ifstream& fin)
+    {
+        init(fin);
     }
 
     virtual void draw(BYTE* matr)
     {
-        line(0, 1, matr);
-        line(1, 2, matr);
-        line(0, 2, matr);
+        line(X0, Y0, X1, Y1, matr);
+        line(X1, Y1, X2, Y2, matr);
+        line(X0, Y0, X2, Y2, matr);
+    }
+
+    virtual void init(ifstream& fin)
+    {
+        Figure::init(fin);
+        fin >> X1;
+        fin >> Y1;
+        fin >> X2;
+        fin >> Y2;
     }
 };
 
@@ -126,10 +231,9 @@ class Square : public Figure
 {
     int X0, Y0, A;
 public:
-    Square(ifstream& fin) {
-        fin >> X0;
-        fin >> Y0;
-        fin >> A;
+    Square(ifstream& fin)
+    {
+        init(fin);
     }
 
     virtual void draw(BYTE* matr)
@@ -164,6 +268,12 @@ public:
             for (y = Ymin; y <= Ymax; y++)
                 memset(matr + 3 * (1000 * y + x), 0, 3);
     }
+
+    virtual void init(ifstream& fin)
+    {
+        Figure::init(fin);
+        fin >> A;
+    }
 };
 
 void DrawAll(Figure** figs, size_t n, BYTE* matr)
@@ -179,10 +289,8 @@ int main()
     setlocale(LC_ALL, "Russian");
     Figure** mas = NULL;
     FILE* f = NULL;
-    FILE* fr = NULL;
     BITMAPFILEHEADER bfh;
     BITMAPINFOHEADER bih;
-    RGBTRIPLE rgb;
     ifstream fin;
 
     size_t n = 0;
@@ -234,7 +342,7 @@ int main()
                 mas[i] = new Square(fin);
             }
             else {
-                throw 4;
+                throw std::exception("\nошибка при чтении. в исходном файле не верно задано имя фигуры\n");
             }
             cout << name << endl;
             ++num;
@@ -244,68 +352,27 @@ int main()
         DrawAll(mas, n, matr);
 
         fwrite(&matr, 1, 1000*1000*3, f);
+    }
+    catch (std::exception & ex) {
+        cout << ex.what();
+    }
 
-        fclose(f);
-        for (int i = 0; i < n; ++i) {
+    if (mas)
+    {
+        for (int i = 0; i < num; ++i) {
             delete mas[i];
             mas[i] = NULL;
         }
         delete[] mas;
         mas = NULL;
-        return 0;
     }
-    catch (int ex) {
-        switch (ex) {
-        case 1:
-            cout << "\nошибка count. Не удалось открыть файл для чтения количества строк!\n";
-            break;
-        case 2:
-            cout << "\nошибка Triangle.getxy. координаты одной из точек лежат за границей изображения!\n";
-            break;
-        case 3:
-            cout << "\nошибка Square.getxy. координаты левого нижнего угла лежат за границей изображения!\n";
-            break;
-        case 4:
-            cout << "\nошибка при чтении. в исходном файле не верно задано имя фигуры\n";
-            break;
-        }
-        if (mas)
-        {
-            for (int i = 0; i < num; ++i) {
-                delete mas[i];
-                mas[i] = NULL;
-            }
-            delete[] mas;
-            mas = NULL;
-        }
-        if (f)
-        {
-            fclose(f);
-            f = NULL;
-        }
-        if (fin) {
-            fin.close();
-        }
-        return 0;
+    if (f)
+    {
+        fclose(f);
+        f = NULL;
     }
-    catch (...) {
-        if (mas)
-        {
-            for (int i = 0; i < num; ++i) {
-                delete mas[i];
-                mas[i] = NULL;
-            }
-            delete[] mas;
-            mas = NULL;
-        }
-        if (f)
-        {
-            fclose(f);
-            f = NULL;
-        }
-        if (fin) {
-            fin.close();
-        }
-        return 0;
+    if (fin) {
+        fin.close();
     }
+    return 0;
 }

@@ -1,15 +1,17 @@
-﻿  Source.cpp
-C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(50,17): warning C4244: =: преобразование "double" в "float", возможна потеря данных
-C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(58,20): warning C4244: =: преобразование "float" в "int", возможна потеря данных
-C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(59,20): warning C4244: =: преобразование "float" в "int", возможна потеря данных
-C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(76,23): warning C4244: =: преобразование "int" в "float", возможна потеря данных
-C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(77,23): warning C4244: =: преобразование "int" в "float", возможна потеря данных
-C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(85,32): warning C4244: =: преобразование "int" в "float", возможна потеря данных
-C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(86,32): warning C4244: =: преобразование "float" в "int", возможна потеря данных
-C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(87,30): warning C4244: =: преобразование "float" в "int", возможна потеря данных
-C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(93,33): warning C4244: =: преобразование "int" в "float", возможна потеря данных
-C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(94,33): warning C4244: =: преобразование "float" в "int", возможна потеря данных
-C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(95,30): warning C4244: =: преобразование "float" в "int", возможна потеря данных
-C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(74,19): warning C4101: Ya: неиспользованная локальная переменная
-C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(185,15): warning C4101: rgb: неиспользованная локальная переменная
+﻿  MyClass.cpp
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\MyClass.h(41,25): warning C4101: sa: неиспользованная локальная переменная
+  Source.cpp
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\MyClass.h(41,25): warning C4101: sa: неиспользованная локальная переменная
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(147,20): warning C4244: =: преобразование "float" в "int", возможна потеря данных
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(148,20): warning C4244: =: преобразование "float" в "int", возможна потеря данных
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(158,17): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(172,21): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(173,21): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(181,27): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(182,30): warning C4244: =: преобразование "float" в "int", возможна потеря данных
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(183,30): warning C4244: =: преобразование "float" в "int", возможна потеря данных
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(189,27): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(190,31): warning C4244: =: преобразование "float" в "int", возможна потеря данных
+C:\Users\Наталья\Desktop\работа\figures\figures\figures\Source.cpp(191,30): warning C4244: =: преобразование "float" в "int", возможна потеря данных
+  Создание кода...
   figures.vcxproj -> C:\Users\Наталья\Desktop\работа\figures\figures\x64\Debug\figures.exe
