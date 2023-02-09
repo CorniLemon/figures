@@ -10,94 +10,94 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 using namespace std;
-#include "MyClass.h"
-
-struct Point
-{
-private:
-    double X, Y;
-public:
-    Point()
-        : X(0), Y(0)
-    {}
-
-    Point(double X, double Y)
-        : X(X), Y(Y)
-    {}
-
-    Point(const Point & p)
-        : X(p.X), Y(p.Y)
-    {}
-
-    Point operator+(const Point& p)
-    {
-        return Point(X + p.X, Y + p.Y);
-    }
-
-    friend Point operator-(const Point& p1, const Point& p2);
-    friend Point operator-(double x, const Point& p);
-
-    Point & operator+=(const Point& p)
-    {
-        X += p.X;
-        Y += p.Y;
-        return *this;
-    }
-
-    Point operator*(const Point& p);
-};
-
-Point Point::operator*(const Point& p)
-{
-    return Point(X * p.X, Y * p.Y);
-}
-
-Point operator-(const Point& p1, const Point& p2)
-{
-    return Point(p1.X - p2.X, p1.Y - p2.Y);
-}
-
-Point operator-(double x, const Point& p)
-{
-    return Point(x - p.X, -p.Y);
-}
-
-void f()
-{
-    Point p1, p2(0, 5);
-    Point p3 = p1 + p2;
-    Point p4 = p1.operator+(p2);
-}
-
-class Array
-{
-private:
-    int* p;
-    int n;
-
-    Array()
-        : p(NULL), n(0)
-    {}
-
-    Array(int n)
-        : p(new int[n])
-    {}
-
-    Array(const Array& a)
-    {
-        if (a.p)
-        {
-            p = new int[a.n];
-            n = a.n;
-            memcpy(p, a.p, n * sizeof(int));
-        }
-        else
-        {
-            p = NULL;
-            n = 0;
-        }
-    }
-};
+//#include "MyClass.h"
+//
+//struct Point
+//{
+//private:
+//    double X, Y;
+//public:
+//    Point()
+//        : X(0), Y(0)
+//    {}
+//
+//    Point(double X, double Y)
+//        : X(X), Y(Y)
+//    {}
+//
+//    Point(const Point & p)
+//        : X(p.X), Y(p.Y)
+//    {}
+//
+//    Point operator+(const Point& p)
+//    {
+//        return Point(X + p.X, Y + p.Y);
+//    }
+//
+//    friend Point operator-(const Point& p1, const Point& p2);
+//    friend Point operator-(double x, const Point& p);
+//
+//    Point & operator+=(const Point& p)
+//    {
+//        X += p.X;
+//        Y += p.Y;
+//        return *this;
+//    }
+//
+//    Point operator*(const Point& p);
+//};
+//
+//Point Point::operator*(const Point& p)
+//{
+//    return Point(X * p.X, Y * p.Y);
+//}
+//
+//Point operator-(const Point& p1, const Point& p2)
+//{
+//    return Point(p1.X - p2.X, p1.Y - p2.Y);
+//}
+//
+//Point operator-(double x, const Point& p)
+//{
+//    return Point(x - p.X, -p.Y);
+//}
+//
+//void f()
+//{
+//    Point p1, p2(0, 5);
+//    Point p3 = p1 + p2;
+//    Point p4 = p1.operator+(p2);
+//}
+//
+//class Array
+//{
+//private:
+//    int* p;
+//    int n;
+//
+//    Array()
+//        : p(NULL), n(0)
+//    {}
+//
+//    Array(int n)
+//        : p(new int[n])
+//    {}
+//
+//    Array(const Array& a)
+//    {
+//        if (a.p)
+//        {
+//            p = new int[a.n];
+//            n = a.n;
+//            memcpy(p, a.p, n * sizeof(int));
+//        }
+//        else
+//        {
+//            p = NULL;
+//            n = 0;
+//        }
+//    }
+//};
 
 BYTE matr[1000 * 1000*3];
 
@@ -126,6 +126,8 @@ public:
         fin >> X0;
         fin >> Y0;
     }
+
+    virtual ~Figure() {}
 };
 
 class Circle : public Figure
