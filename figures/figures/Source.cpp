@@ -9,8 +9,9 @@
 #include <fstream>
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <vector>
 using namespace std;
-//#include "MyClass.h"
+//#include "MyClass.h"//что-то про точки
 //
 //struct Point
 //{
@@ -101,18 +102,18 @@ using namespace std;
 
 BYTE matr[1000 * 1000*3];
 
-size_t count(ifstream& base) {
-    char str[1024];
-    size_t i = 0;
-    while (!base.eof())
-    {
-        base.getline(str, 1024, '\n');
-        i++;
-    }
-    base.seekg(0);
-    cout << "в файле " << i << " фигур(ы)\n\n";
-    return i;
-}
+//size_t count(ifstream& base) {
+//    char str[1024];
+//    size_t i = 0;
+//    while (!base.eof())
+//    {
+//        base.getline(str, 1024, '\n');
+//        i++;
+//    }
+//    base.seekg(0);
+//    cout << "в файле " << i << " фигур(ы)\n\n";
+//    return i;
+//}
 
 class Figure
 {
@@ -143,6 +144,7 @@ public:
 
     virtual void draw(BYTE* matr)
     {
+        cout << "Circle" << R << " " << X0 << endl;
         float t;
         int x = 0, y = 0;
         for (t = 0; t <= 2 * M_PI; t += Ht) {
@@ -278,11 +280,38 @@ public:
     }
 };
 
-void DrawAll(Figure** figs, size_t n, BYTE* matr)
+//void DrawAll(Figure** figs, size_t n, BYTE* matr)
+//{
+//    for (Figure** mas = figs; mas < figs + n; ++mas)
+//    {
+//        (*mas)->draw(matr);
+//    }
+//}
+
+void DrawAll(vector<Figure*> figs, BYTE* matr)
 {
-    for (Figure** mas = figs; mas < figs + n; ++mas)
-    {
-        (*mas)->draw(matr);
+    for (int i = 0; i < figs.size(); ++i) {
+        figs[i]->draw(matr);
+    }
+}
+
+void ReadFigs(ifstream& fin, vector<Figure*>& mas) {
+    string name;
+    while (!fin.eof()) {
+        fin >> name;
+        if (name == "TRIANGLE") {
+            mas.push_back(new Triangle(fin));//надо ли закрывать все i элементов?
+        }
+        else if (name == "CIRCLE") {
+            mas.push_back(new Circle(fin));
+        }
+        else if (name == "SQUARE") {
+            mas.push_back(new Square(fin));
+        }
+        else {
+            throw std::exception("\nошибка при чтении. в исходном файле не верно задано имя фигуры\n");
+        }
+        //cout << name << endl;
     }
 }
 
@@ -295,26 +324,25 @@ int main()
     BITMAPINFOHEADER bih;
     ifstream fin;
 
-    size_t n = 0;
-    size_t num = 0;
+    {//оформление шапок
+        bfh.bfType = 19778;
+        bfh.bfSize = sizeof(bfh) + sizeof(bih) + 3 * 1000 * 1000;
+        bfh.bfReserved1 = 0;
+        bfh.bfReserved2 = 0;
+        bfh.bfOffBits = sizeof(bfh) + sizeof(bih);
 
-    bfh.bfType = 19778;
-    bfh.bfSize = sizeof(bfh) + sizeof(bih) + 3 * 1000 * 1000;
-    bfh.bfReserved1 = 0;
-    bfh.bfReserved2 = 0;
-    bfh.bfOffBits = sizeof(bfh) + sizeof(bih);
-
-    bih.biSize = sizeof(bih);
-    bih.biWidth = 1000;
-    bih.biHeight = 1000;
-    bih.biPlanes = 1;
-    bih.biBitCount = 24;
-    bih.biCompression = 0;
-    bih.biSizeImage = 1000 * 1000 * 3;
-    bih.biXPelsPerMeter = 2835;
-    bih.biYPelsPerMeter = 2835;
-    bih.biClrUsed = 0;
-    bih.biClrImportant = 0;
+        bih.biSize = sizeof(bih);
+        bih.biWidth = 1000;
+        bih.biHeight = 1000;
+        bih.biPlanes = 1;
+        bih.biBitCount = 24;
+        bih.biCompression = 0;
+        bih.biSizeImage = 1000 * 1000 * 3;
+        bih.biXPelsPerMeter = 2835;
+        bih.biYPelsPerMeter = 2835;
+        bih.biClrUsed = 0;
+        bih.biClrImportant = 0;
+    }
 
     try {
         memset(matr, 255, 1000 * 1000 * 3);
@@ -327,31 +355,13 @@ int main()
         fwrite(&bfh, sizeof(bfh), 1, f);
         fwrite(&bih, sizeof(bih), 1, f);
 
+        vector <Figure*> mas;
         fin.open("fig.txt");
-        n = count(fin);
-        mas = new Figure * [n];
-        
-        string name;
-        for (int i = 0; i < n; ++i) {
-            fin >> name;
-            if (name == "TRIANGLE") {
-                mas[i] = new Triangle(fin);//надо ли закрывать все i элементов?
-            }
-            else if (name == "CIRCLE") {
-                mas[i] = new Circle(fin);
-            }
-            else if (name == "SQUARE") {
-                mas[i] = new Square(fin);
-            }
-            else {
-                throw std::exception("\nошибка при чтении. в исходном файле не верно задано имя фигуры\n");
-            }
-            cout << name << endl;
-            ++num;
-        }
+        ReadFigs(fin, mas);
         fin.close();
 
-        DrawAll(mas, n, matr);
+        //DrawAll(mas, n, matr);
+
 
         fwrite(&matr, 1, 1000*1000*3, f);
     }
@@ -359,7 +369,7 @@ int main()
         cout << ex.what();
     }
 
-    if (mas)
+    /*if (mas)
     {
         for (int i = 0; i < num; ++i) {
             delete mas[i];
@@ -367,7 +377,7 @@ int main()
         }
         delete[] mas;
         mas = NULL;
-    }
+    }*/
     if (f)
     {
         fclose(f);
